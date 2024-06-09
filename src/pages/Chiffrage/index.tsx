@@ -439,7 +439,7 @@ function Main() {
           Ajouter
         </Button>
       </div>
-      <div className="kmoz-h-[85vh] kmoz-p-4 kmoz-bg-muted/90 kmoz-shadow-sm kmoz-mt-3 border kmoz-rounded-md">
+      <div className="kmoz-h-[100%] kmoz-p-4 kmoz-bg-muted/90 kmoz-shadow-sm kmoz-mt-3 border kmoz-rounded-md">
         <DataTable />
       </div>
     </div>

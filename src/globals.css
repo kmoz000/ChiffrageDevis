@@ -67,14 +67,35 @@
 }
 
 @layer base {
-  body,#root,html {
-    @apply !kmoz-bg-white !kmoz-overflow-hidden !kmoz-relative !kmoz-rounded-md kmoz-text-foreground kmoz-min-h-screen kmoz-w-screen 
+
+  body,
+  #root,
+  html {
+    @apply !kmoz-bg-white !kmoz-overflow-hidden !kmoz-relative !kmoz-rounded-md kmoz-text-foreground kmoz-min-h-screen kmoz-w-screen
   }
-  a,button {
+
+  a, button {
     @apply kmoz-select-none;
   }
+
   #root {
     border-color: #2e2e2e22;
     border-width: 0.5px;
+  }
+}
+
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }

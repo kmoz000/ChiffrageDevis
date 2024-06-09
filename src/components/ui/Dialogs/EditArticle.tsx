@@ -46,8 +46,8 @@ const EditArticleDialog: React.FC<EditArticleDialogProps> = ({ article, onSave }
                 </div>
             </DialogTrigger>
             <DialogPortal>
-                <DialogOverlay className="kmoz-fixed kmoz-inset-0 kmoz-bg-black kmoz-bg-opacity-50" />
-                <DialogContent className="kmoz-top-1/2 kmoz-left-1/2 kmoz-p-6 kmoz-fixed kmoz-bg-white kmoz-shadow-lg kmoz-rounded-lg">
+                <DialogOverlay className="kmoz-relative kmoz-inset-0 kmoz-bg-black kmoz-bg-opacity-50" />
+                <DialogContent className="kmoz-top-1/2 kmoz-left-1/2 kmoz-h-[90%] kmoz-p-6 kmoz-fixed kmoz-bg-white kmoz-shadow-lg kmoz-rounded-lg kmoz-overflow-scroll">
                     <DialogTitle>Edit Article</DialogTitle>
                     <DialogDescription>Make changes to the article below.</DialogDescription>
                     <form className="kmoz-space-y-4">

@@ -11,7 +11,7 @@ type Article = {
     total: number;
 };
 
-type ProjectIndex = {
+export type ProjectIndex = {
     id: number;
     designation: string;
     unite: string;

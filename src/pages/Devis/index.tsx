@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowDown, FaChevronDown, FaEdit } from "react-icons/fa";
 import { LuClipboard, LuDelete, LuFileEdit } from "react-icons/lu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import EditDevisDialog from "@/components/ui/Dialogs/EditDevisDialog";
+import { ProjectIndex, databaseService } from "@/lib/store";
 
 type Devis = {
   id: number;
@@ -85,7 +87,7 @@ const columns: ColumnDef<Devis>[] = [
       <div className="kmoz-flex kmoz-items-center kmoz-space-x-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="kmoz-p-0" disabled={(Object.keys(table.getState().rowSelection).length == 0)}>
+            <Button variant="ghost" className="kmoz-p-0 kmoz-w-full" disabled={(Object.keys(table.getState().rowSelection).length == 0)}>
               <FaEdit size={20} />
             </Button>
           </DropdownMenuTrigger>
@@ -106,13 +108,6 @@ const columns: ColumnDef<Devis>[] = [
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
             >
-              <LuFileEdit className="kmoz-h-4 kmoz-w-4" />
-              <span className="kmoz-ml-2">Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="kmoz-cursor-pointer"
-            >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
             </DropdownMenuItem>
@@ -121,12 +116,13 @@ const columns: ColumnDef<Devis>[] = [
       </div>
     ),
     enableHiding: false,
+
     cell: ({ row }) => {
       const all = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="kmoz-p-0">
+            <Button variant="ghost" className="kmoz-p-0 kmoz-w-full">
               <FaEdit size={20} />
             </Button>
           </DropdownMenuTrigger>
@@ -146,10 +142,9 @@ const columns: ColumnDef<Devis>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
-              onClick={() => navigator.clipboard.writeText(JSON.stringify(all))}
+              asChild
             >
-              <LuFileEdit className="kmoz-h-4 kmoz-w-4" />
-              <span className="kmoz-ml-2">Edit</span>
+              <EditDevisDialog devis={row.original} onSave={(updatedDevis) => null} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

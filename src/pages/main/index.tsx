@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowDown, FaChevronDown, FaEdit } from "react-icons/fa";
 import { LuClipboard, LuDelete, LuFileEdit, LuMoreHorizontal } from "react-icons/lu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import EditArticleDialog from "@/components/ui/Dialogs/EditArticle";
+import AddArticleDialog from "@/components/ui/Dialogs/AddArticle";
+import { databaseService } from "@/lib/store";
 
 type Article = {
   id: number;
@@ -21,48 +23,6 @@ type Article = {
   total: number;
 };
 
-const data: Article[] = [
-  {
-    id: 1,
-    designation: "Product 1",
-    unit: "pcs",
-    prix_achat_transport: 100,
-    chutes: 5,
-    consommable: 20,
-    boulonnerie: 10,
-    total: 135
-  },
-  {
-    id: 2,
-    designation: "Product 2",
-    unit: "pcs",
-    prix_achat_transport: 120,
-    chutes: 3,
-    consommable: 25,
-    boulonnerie: 15,
-    total: 163
-  },
-  {
-    id: 3,
-    designation: "Product 3",
-    unit: "pcs",
-    prix_achat_transport: 80,
-    chutes: 2,
-    consommable: 15,
-    boulonnerie: 8,
-    total: 105
-  },
-  {
-    id: 4,
-    designation: "Product 4",
-    unit: "pcs",
-    prix_achat_transport: 150,
-    chutes: 7,
-    consommable: 30,
-    boulonnerie: 20,
-    total: 207
-  }
-];
 
 const columns: ColumnDef<Article>[] = [
   {
@@ -133,7 +93,7 @@ const columns: ColumnDef<Article>[] = [
   },
   {
     id: "actions",
-    header: ({ table }) => (
+    header: ({ table, column, header }) => (
       <div className="kmoz-flex kmoz-items-center kmoz-space-x-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -157,6 +117,14 @@ const columns: ColumnDef<Article>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              onClick={() => {
+                Promise.all(table.getSelectedRowModel().rows.map((row) => {
+                  let art = row.original;
+                  return databaseService.removeArticle(art.id)
+                })).then(() => {
+                  toast.success("removed")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
@@ -193,11 +161,17 @@ const columns: ColumnDef<Article>[] = [
               className="kmoz-cursor-pointer"
               asChild
             >
-              <EditArticleDialog article={row.original} onSave={(updatedArticle)=>{}} />
+              <EditArticleDialog article={row.original} onSave={(updatedArticle) => { }} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              onClick={() => {
+                let art = row.original;
+                databaseService.removeArticle(art.id).then(() => {
+                  toast.success("cleared")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
@@ -214,7 +188,18 @@ export function DataTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [data, setData] = useState<Article[]>([])
   const [activeselection, setActiveselection] = useState(false)
+  useEffect(() => {
+    (async () => {
+      try {
+        let _data = await databaseService.fetchAllArticles()
+        setData(_data)
+      } catch (error) {
+
+      }
+    })()
+  })
   const table = useReactTable({
     data,
     columns,
@@ -360,9 +345,21 @@ function Main() {
     <div className="kmoz-p-4">
       <div className="kmoz-h-fit kmoz-w-full kmoz-flex kmoz-flex-row kmoz-justify-between kmoz-items-center">
         <h2 className="kmoz-mx-2 kmoz-text-balance">Articles</h2>
-        <Button className="kmoz-mx-2 kmoz-my-1">
-          Ajouter
-        </Button>
+        <AddArticleDialog onSave={(newArticle: Article) => {
+          databaseService.addArticle(
+            newArticle.designation,
+            newArticle.unit,
+            newArticle.prix_achat_transport,
+            newArticle.chutes,
+            newArticle.consommable,
+            newArticle.boulonnerie,
+            newArticle.total
+          ).then(() => {
+            toast.success("Article added with success!")
+          }).catch(() => {
+            toast.error("Error adding article!")
+          })
+        }} />
       </div>
       <div className="kmoz-h-[100%] kmoz-p-4 kmoz-bg-muted/90 kmoz-shadow-sm kmoz-mt-3 border kmoz-rounded-md">
         <DataTable />

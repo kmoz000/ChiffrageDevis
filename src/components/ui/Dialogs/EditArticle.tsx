@@ -40,10 +40,10 @@ const EditArticleDialog: React.FC<EditArticleDialogProps> = ({ article, onSave }
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <div className="kmoz-flex kmoz-flex-auto kmoz-items-center kmoz-ml-2 kmoz-cursor-pointer">
+                <Button variant="ghost" className="kmoz-w-full kmoz-flex !kmoz-justify-start kmoz-items-center kmoz-pl-2 kmoz-cursor-pointer">
                     <LuFileEdit className="kmoz-h-4 kmoz-w-4" />
                     <span className="kmoz-ml-2">Edit</span>
-                </div>
+                </Button>
             </DialogTrigger>
             <DialogPortal>
                 <DialogOverlay className="kmoz-relative kmoz-inset-0 kmoz-bg-black kmoz-bg-opacity-50" />

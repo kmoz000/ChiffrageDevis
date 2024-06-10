@@ -188,8 +188,8 @@ export function DataTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [data, setData] = useState<Article[]>([])
   const [activeselection, setActiveselection] = useState(false)
+  const [data, setData] = useState<Article[]>([])
   useEffect(() => {
     (async () => {
       try {

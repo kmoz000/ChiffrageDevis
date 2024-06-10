@@ -43,10 +43,12 @@ type Devis = {
 
 class DatabaseService {
     // Methods for articles
-    private db: Database;
+    static db: Database;
 
-    constructor(db: Database) {
-        this.db = db;
+    constructor(db: Promise<Database>) {
+        db.then(_db => {
+            DatabaseService.db = _db
+        });
     }
     async addArticle(
         designation: string,
@@ -61,12 +63,12 @@ class DatabaseService {
             INSERT INTO articles (designation, unit, prix_achat_transport, chutes, consommable, boulonnerie, total)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        await this.db.execute(sql, [designation, unit, prixAchatTransport, chutes, consommable, boulonnerie, total]);
+        await DatabaseService.db.execute(sql, [designation, unit, prixAchatTransport, chutes, consommable, boulonnerie, total]);
     }
 
     async removeArticle(id: number) {
         const sql = `DELETE FROM articles WHERE id = ?`;
-        await this.db.execute(sql, [id]);
+        await DatabaseService.db.execute(sql, [id]);
     }
 
     async updateArticle(
@@ -84,18 +86,18 @@ class DatabaseService {
             SET designation = ?, unit = ?, prix_achat_transport = ?, chutes = ?, consommable = ?, boulonnerie = ?, total = ?
             WHERE id = ?
         `;
-        await this.db.execute(sql, [designation, unit, prixAchatTransport, chutes, consommable, boulonnerie, total, id]);
+        await DatabaseService.db.execute(sql, [designation, unit, prixAchatTransport, chutes, consommable, boulonnerie, total, id]);
     }
 
     async findOneArticle(id: number): Promise<Article | null> {
         const sql = `SELECT * FROM articles WHERE id = ?`;
-        const result = await this.db.select<Article[]>(sql, [id]);
+        const result = await DatabaseService.db.select<Article[]>(sql, [id]);
         return result.length ? result[0] : null;
     }
 
     async fetchAllArticles(): Promise<Article[]> {
         const sql = `SELECT * FROM articles`;
-        return await this.db.select<Article[]>(sql);
+        return await DatabaseService.db.select<Article[]>(sql);
     }
 
     // Methods for project_index
@@ -126,7 +128,7 @@ class DatabaseService {
                 manutention_mo_mont, ce_mont, cout_mont, frais_dep_chant, prix_de_revient, pr_un, marge, pv_un, pv_un_prix_vente_dh_ht
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        await this.db.execute(sql, [
+        await DatabaseService.db.execute(sql, [
             designation, unite, qte, matiere, mo, ce, cout, fraisMachine, peinture, transport,
             manutentionMoMont, ceMont, coutMont, fraisDepChant, prixDeRevient, prUn, marge, pvUn, pvUnPrixVenteDhHt
         ]);
@@ -134,7 +136,7 @@ class DatabaseService {
 
     async removeProjectIndex(id: number) {
         const sql = `DELETE FROM project_index WHERE id = ?`;
-        await this.db.execute(sql, [id]);
+        await DatabaseService.db.execute(sql, [id]);
     }
 
     async updateProjectIndex(
@@ -165,7 +167,7 @@ class DatabaseService {
                 manutention_mo_mont = ?, ce_mont = ?, cout_mont = ?, frais_dep_chant = ?, prix_de_revient = ?, pr_un = ?, marge = ?, pv_un = ?, pv_un_prix_vente_dh_ht = ?
             WHERE id = ?
         `;
-        await this.db.execute(sql, [
+        await DatabaseService.db.execute(sql, [
             designation, unite, qte, matiere, mo, ce, cout, fraisMachine, peinture, transport,
             manutentionMoMont, ceMont, coutMont, fraisDepChant, prixDeRevient, prUn, marge, pvUn, pvUnPrixVenteDhHt, id
         ]);
@@ -173,13 +175,13 @@ class DatabaseService {
 
     async findOneProjectIndex(id: number): Promise<ProjectIndex | null> {
         const sql = `SELECT * FROM project_index WHERE id = ?`;
-        const result = await this.db.select<ProjectIndex[]>(sql, [id]);
+        const result = await DatabaseService.db.select<ProjectIndex[]>(sql, [id]);
         return result.length ? result[0] : null;
     }
 
     async fetchAllProjectIndexes(): Promise<ProjectIndex[]> {
         const sql = `SELECT * FROM project_index`;
-        return await this.db.select<ProjectIndex[]>(sql);
+        return await DatabaseService.db.select<ProjectIndex[]>(sql);
     }
 
     // Methods for devis
@@ -188,12 +190,12 @@ class DatabaseService {
             INSERT INTO devis (project_index_id, quantity, total_ht)
             VALUES (?, ?, ?)
         `;
-        await this.db.execute(sql, [projectIndexId, quantity, totalHt]);
+        await DatabaseService.db.execute(sql, [projectIndexId, quantity, totalHt]);
     }
 
     async removeDevis(id: number) {
         const sql = `DELETE FROM devis WHERE id = ?`;
-        await this.db.execute(sql, [id]);
+        await DatabaseService.db.execute(sql, [id]);
     }
 
     async updateDevis(id: number, projectIndexId: number, quantity: number, totalHt: number) {
@@ -202,19 +204,19 @@ class DatabaseService {
             SET project_index_id = ?, quantity = ?, total_ht = ?
             WHERE id = ?
         `;
-        await this.db.execute(sql, [projectIndexId, quantity, totalHt, id]);
+        await DatabaseService.db.execute(sql, [projectIndexId, quantity, totalHt, id]);
     }
 
     async findOneDevis(id: number): Promise<Devis | null> {
         const sql = `SELECT * FROM devis WHERE id = ?`;
-        const result = await this.db.select<Devis[]>(sql, [id]);
+        const result = await DatabaseService.db.select<Devis[]>(sql, [id]);
         return result.length ? result[0] : null;
     }
 
     async fetchAllDevis(): Promise<Devis[]> {
         const sql = `SELECT * FROM devis`;
-        return await this.db.select<Devis[]>(sql);
+        return await DatabaseService.db.select<Devis[]>(sql);
     }
 }
-export const db = await Database.load("sqlite:base.db");
+export const db = Database.load("sqlite:base.db");
 export const databaseService = new DatabaseService(db);

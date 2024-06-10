@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronDown, FaEdit } from "react-icons/fa";
 import { LuClipboard, LuDelete } from "react-icons/lu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import EditProjectIndexDialog from "@/components/ui/Dialogs/EditProjectIndexDialog";
+import AddProjectIndexDialog from "@/components/ui/Dialogs/AddProjectIndex";
+import { databaseService } from "@/lib/store";
 
 type ProjectIndex = {
   id: number;
@@ -196,7 +198,7 @@ const columns: ColumnDef<ProjectIndex>[] = [
   {
     accessorKey: "marge",
     header: "Marge",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("marge")}</div>
+    cell: ({ row }) => <div className="lowercase">{row.getValue("marge")}%</div>
   },
   {
     accessorKey: "pv_un",
@@ -234,6 +236,14 @@ const columns: ColumnDef<ProjectIndex>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              onClick={() => {
+                Promise.all(table.getSelectedRowModel().rows.map((row) => {
+                  let art = row.original;
+                  return databaseService.removeProjectIndex(art.id)
+                })).then(() => {
+                  toast.success("removed")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
@@ -275,6 +285,12 @@ const columns: ColumnDef<ProjectIndex>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              onClick={() => {
+                let art = row.original;
+                databaseService.removeProjectIndex(art.id).then(() => {
+                  toast.success("cleared")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
@@ -292,6 +308,17 @@ export function DataTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [_activeselection, setActiveselection] = useState(false)
+  const [data, setData] = useState<ProjectIndex[]>([])
+  useEffect(() => {
+    (async () => {
+      try {
+        let _data = await databaseService.fetchAllProjectIndexes()
+        setData(_data)
+      } catch (error) {
+
+      }
+    })()
+  })
   const table = useReactTable({
     data,
     columns,
@@ -435,9 +462,34 @@ function Main() {
     <div className="kmoz-p-4">
       <div className="kmoz-h-fit kmoz-w-full kmoz-flex kmoz-flex-row kmoz-justify-between kmoz-items-center">
         <h2 className="kmoz-mx-2 kmoz-text-balance">Project Indices</h2>
-        <Button className="kmoz-mx-2 kmoz-my-1">
-          Ajouter
-        </Button>
+        <AddProjectIndexDialog onSave={(newProjectIndex) => {
+          databaseService.addProjectIndex(
+            newProjectIndex.designation,
+            newProjectIndex.unite,
+            newProjectIndex.qte,
+            newProjectIndex.matiere,
+            newProjectIndex.mo,
+            newProjectIndex.ce,
+            newProjectIndex.cout,
+            newProjectIndex.frais_machine,
+            newProjectIndex.peinture,
+            newProjectIndex.transport,
+            newProjectIndex.manutention_mo_mont,
+            newProjectIndex.ce_mont,
+            newProjectIndex.cout_mont,
+            newProjectIndex.frais_dep_chant,
+            newProjectIndex.prix_de_revient,
+            newProjectIndex.pr_un,
+            newProjectIndex.marge,
+            newProjectIndex.pv_un,
+            newProjectIndex.pv_un_prix_vente_dh_ht
+          ).then(() => {
+            toast.success("saved")
+          })
+            .catch(() => {
+              toast.error("not saved!")
+            })
+        }} />
       </div>
       <div className="kmoz-h-[100%] kmoz-p-4 kmoz-bg-muted/90 kmoz-shadow-sm kmoz-mt-3 border kmoz-rounded-md">
         <DataTable />

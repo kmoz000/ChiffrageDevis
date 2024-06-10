@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowDown, FaChevronDown, FaEdit } from "react-icons/fa";
-import { LuClipboard, LuDelete, LuFileEdit } from "react-icons/lu";
+import { FaArrowDown, FaChevronDown, FaEdit, FaFilePdf } from "react-icons/fa";
+import { LuClipboard, LuDelete, LuFileEdit, LuSpace } from "react-icons/lu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import EditDevisDialog from "@/components/ui/Dialogs/EditDevisDialog";
 import { ProjectIndex, databaseService } from "@/lib/store";
 import AddDevisDialog from "@/components/ui/Dialogs/AddDevis";
+import ExportDevisDialog from "@/components/ui/Dialogs/Export";
 
 type Devis = {
   id: number;
@@ -93,6 +94,21 @@ const columns: ColumnDef<Devis>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              asChild
+            >
+              <ExportDevisDialog selectedDevis={table.getSelectedRowModel().rows.map(s => s.original)} />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="kmoz-cursor-pointer"
+              onClick={() => {
+                Promise.all(table.getSelectedRowModel().rows.map((row) => {
+                  let art = row.original;
+                  return databaseService.removeDevis(art.id)
+                })).then(() => {
+                  toast.success("removed")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>
@@ -135,6 +151,12 @@ const columns: ColumnDef<Devis>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="kmoz-cursor-pointer"
+              onClick={() => {
+                let art = row.original;
+                databaseService.removeProjectIndex(art.id).then(() => {
+                  toast.success("cleared")
+                })
+              }}
             >
               <LuDelete className="kmoz-h-4 kmoz-w-4" />
               <span className="kmoz-ml-2">Supprimer</span>

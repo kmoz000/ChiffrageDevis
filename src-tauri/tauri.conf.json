@@ -12,7 +12,15 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true,
+      "all": false,
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": false,
+        "open": true,
+        "save": true
+      },
       "fs": {
         "all": true,
         "scope": [
@@ -29,7 +37,8 @@
         "minimizable": true,
         "decorations": false,
         "transparent": true,
-        "maximizable": true
+        "maximizable": true,
+        "fileDropEnabled": false
       }
     ],
     "security": {
@@ -39,7 +48,7 @@
     "bundle": {
       "active": true,
       "category": "Productivity",
-      "copyright": "Copyright @ OLDI-K, OOO 2022, All rights reserved",
+      "copyright": "Copyright @ KM8Oz 2024, All rights reserved",
       "targets": "all",
       "deb": {
         "depends": []
@@ -47,7 +56,7 @@
       "macOS": {
         "license": "./LICENCE",
         "entitlements": "./entitlements.plist",
-        "exceptionDomain": "kmoz.dev",
+        "exceptionDomain": "dup.company",
         "minimumSystemVersion": "10.7",
         "frameworks": [],
         "providerShortName": "Artem Semenov",

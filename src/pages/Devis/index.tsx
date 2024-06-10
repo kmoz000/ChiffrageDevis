@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import EditDevisDialog from "@/components/ui/Dialogs/EditDevisDialog";
 import { ProjectIndex, databaseService } from "@/lib/store";
+import AddDevisDialog from "@/components/ui/Dialogs/AddDevis";
 
 type Devis = {
   id: number;
@@ -18,21 +19,6 @@ type Devis = {
   total_ht: number;
 };
 
-const data: Devis[] = [
-  {
-    id: 1,
-    project_index_id: 101,
-    quantity: 10,
-    total_ht: 1000
-  },
-  {
-    id: 2,
-    project_index_id: 102,
-    quantity: 15,
-    total_ht: 1500
-  }
-  // Add more data as needed
-];
 
 const columns: ColumnDef<Devis>[] = [
   {
@@ -166,6 +152,17 @@ export function DataTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [activeselection, setActiveselection] = useState(false)
+  const [data, setData] = useState<Devis[]>([])
+  useEffect(() => {
+    (async () => {
+      try {
+        let _data = await databaseService.fetchAllDevis()
+        setData(_data)
+      } catch (error) {
+
+      }
+    })()
+  })
   const table = useReactTable({
     data,
     columns,
@@ -309,9 +306,18 @@ function Main() {
     <div className="kmoz-p-4">
       <div className="kmoz-h-fit kmoz-w-full kmoz-flex kmoz-flex-row kmoz-justify-between kmoz-items-center">
         <h2 className="kmoz-mx-2 kmoz-text-balance">Devis</h2>
-        <Button className="kmoz-mx-2 kmoz-my-1">
-          Ajouter
-        </Button>
+        <AddDevisDialog onSave={(newDevis) => {
+          databaseService.addDevis(
+            newDevis.project_index_id,
+            newDevis.quantity,
+            newDevis.total_ht
+          ).then(() => {
+            toast.success("saved")
+          })
+            .catch(() => {
+              toast.error("not saved!")
+            })
+        }} />
       </div>
       <div className="kmoz-h-[100%] kmoz-p-4 kmoz-bg-muted/90 kmoz-shadow-sm kmoz-mt-3 border kmoz-rounded-md">
         <DataTable />

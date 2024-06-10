@@ -35,53 +35,7 @@ type ProjectIndex = {
   pv_un_prix_vente_dh_ht: number;
 };
 
-const data: ProjectIndex[] = [
-  {
-    id: 1,
-    designation: "Project 1",
-    unite: "pcs",
-    qte: 10,
-    matiere: 100,
-    mo: 50,
-    ce: 30,
-    cout: 180,
-    frais_machine: 20,
-    peinture: 15,
-    transport: 25,
-    manutention_mo_mont: 10,
-    ce_mont: 5,
-    cout_mont: 275,
-    frais_dep_chant: 10,
-    prix_de_revient: 285,
-    pr_un: 28.5,
-    marge: 15,
-    pv_un: 32.775,
-    pv_un_prix_vente_dh_ht: 327.75
-  },
-  {
-    id: 2,
-    designation: "Project 2",
-    unite: "pcs",
-    qte: 15,
-    matiere: 120,
-    mo: 60,
-    ce: 35,
-    cout: 215,
-    frais_machine: 25,
-    peinture: 18,
-    transport: 28,
-    manutention_mo_mont: 12,
-    ce_mont: 6,
-    cout_mont: 304,
-    frais_dep_chant: 12,
-    prix_de_revient: 316,
-    pr_un: 21.066,
-    marge: 17,
-    pv_un: 24.847,
-    pv_un_prix_vente_dh_ht: 372.705
-  }
-  // Add more data as needed
-];
+
 
 const columns: ColumnDef<ProjectIndex>[] = [
   {
